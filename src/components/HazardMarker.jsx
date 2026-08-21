@@ -1,4 +1,3 @@
-
 import { CircleMarker, Popup } from 'react-leaflet'
 import { CloudRain, MapPin, Waves } from 'lucide-react'
 import { useState } from 'react'
