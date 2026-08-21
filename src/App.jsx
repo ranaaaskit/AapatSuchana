@@ -12,6 +12,7 @@ import EmployeeDashboard from './components/EmployeeDashboard'
 import EmployeeAuthPage from './components/EmployeeAuthPage'
 import { supabase } from './services/supabaseClient'
 import { searchNepalLocation } from './services/geocodingService'
+import { fetchLiveHazards } from './services/hazardService'
 
 const fallbackIncidents = [
   { id: 'fallback-kathmandu', title: 'Bagmati river watch', type: 'Flood', severity: 'Medium', lat: 27.7172, lng: 85.324, description: 'Water levels are being monitored near the river corridor.', created_at: new Date().toISOString() },
@@ -36,9 +37,11 @@ export default function App() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, nextSession) => setSession(nextSession))
     return () => { active = false; subscription.unsubscribe() }
   }, [])
-  const refresh = useCallback(async () => { setLoading(true); setError(''); const saved = JSON.parse(localStorage.getItem('aapat-incidents') || '[]'); if (!supabase) { setIncidents([...saved, ...fallbackIncidents]); setLoading(false); return } const { data, error: queryError } = await supabase.from('incidents').select('*').order('created_at', { ascending: false }).limit(200); if (queryError) { setIncidents([...saved, ...fallbackIncidents]); setLastUpdated('Offline reports'); setLoading(false); return } setIncidents([...(data || []), ...saved]); setLastUpdated(new Date().toLocaleTimeString('en-NP', { hour: '2-digit', minute: '2-digit' })); setLoading(false) }, [])
+  const refresh = useCallback(async () => { setLoading(true); setError(''); const saved = JSON.parse(localStorage.getItem('aapat-incidents') || '[]'); const [liveHazards, reportResult] = await Promise.all([fetchLiveHazards().catch(() => []), supabase.from('incidents').select('*').order('created_at', { ascending: false }).limit(200)]); const reports = reportResult.error ? [...saved, ...fallbackIncidents] : [...(reportResult.data || []), ...saved]; setIncidents([...liveHazards, ...reports]); setLastUpdated(new Date().toLocaleTimeString('en-NP', { hour: '2-digit', minute: '2-digit' })); if (reportResult.error && !liveHazards.length) setLastUpdated('Offline reports'); setLoading(false) }, [])
   useEffect(() => {
     queueMicrotask(() => { void refresh() })
+    const timer = window.setInterval(() => { void refresh() }, 15 * 60 * 1000)
+    return () => window.clearInterval(timer)
   }, [refresh])
   useEffect(() => {
     if (!supabase) return undefined
