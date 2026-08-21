@@ -1,0 +1,2 @@
+import { AlertTriangle, X } from 'lucide-react'
+export default function AlertBanner({ onDismiss }) { return <div className="critical-banner"><div><AlertTriangle size={18} /> CRITICAL ALERT: High Landslide Risk Detected near Mugling Area</div><button onClick={onDismiss} aria-label="Dismiss alert"><X size={17} /></button></div> }
