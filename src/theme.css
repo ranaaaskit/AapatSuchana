@@ -3,6 +3,9 @@
 .theme-toggle { display: inline-grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 1px solid #dce5e6; border-radius: 8px; color: #52646c; background: #fff; }
 .theme-toggle:hover { color: #2f819d; border-color: #78b4be; }
 .auth-theme-toggle { margin-left: auto; }
+.auth-top-actions { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+.auth-employee-top { padding: 7px 10px; border: 1px solid #cfe1e3; border-radius: 7px; color: #2f819d; background: #e3f2f3; font-size: 11px; font-weight: 700; }
+.auth-employee-top:hover { border-color: #78b4be; background: #d8edef; }
 [data-theme='dark'] body, [data-theme='dark'] .app-shell { color: #e7f0f1; background: #14252c; }
 [data-theme='dark'] .topbar, [data-theme='dark'] .sidebar, [data-theme='dark'] .stat-card, [data-theme='dark'] .incident-row, [data-theme='dark'] .weather-card, [data-theme='dark'] .report-modal { color: #e7f0f1; background: #1b323a; border-color: #2b4852; }
 [data-theme='dark'] .topbar { box-shadow: 0 1px 0 #2b4852; }

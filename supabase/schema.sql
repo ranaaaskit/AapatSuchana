@@ -11,12 +11,15 @@ create table if not exists public.incidents (
 );
 
 alter table public.incidents add column if not exists user_id uuid references auth.users(id) default auth.uid();
+alter table public.incidents add column if not exists status text not null default 'New' check (status in ('New', 'Investigating', 'Resolved'));
+alter table public.incidents add column if not exists verified boolean not null default false;
 
 alter table public.incidents enable row level security;
 
 drop policy if exists "Anyone can read incidents" on public.incidents;
 drop policy if exists "Anyone can publish incidents" on public.incidents;
 drop policy if exists "Authenticated users can publish incidents" on public.incidents;
+drop policy if exists "Authenticated users can update incidents" on public.incidents;
 
 create policy "Anyone can read incidents"
   on public.incidents for select
@@ -27,6 +30,12 @@ create policy "Authenticated users can publish incidents"
   to authenticated
   with check (auth.uid() = user_id);
 
+create policy "Authenticated users can update incidents"
+  on public.incidents for update
+  to authenticated
+  using (true)
+  with check (true);
+
 do $$
 begin
   if not exists (
@@ -36,3 +45,22 @@ begin
     alter publication supabase_realtime add table public.incidents;
   end if;
 end $$;
+
+create table if not exists public.employee_accounts (
+  email text primary key check (email = lower(email)),
+  display_name text not null default 'Operations staff',
+  active boolean not null default true,
+  created_at timestamptz not null default now()
+);
+
+alter table public.employee_accounts enable row level security;
+
+drop policy if exists "Employees can read their own access" on public.employee_accounts;
+create policy "Employees can read their own access"
+  on public.employee_accounts for select
+  to authenticated
+  using (email = lower(auth.jwt() ->> 'email'));
+
+-- Add approved employee emails here from the Supabase SQL Editor.
+-- Example: insert into public.employee_accounts (email, display_name)
+-- values ('employee@your-org.com', 'Field Operations');

@@ -8,6 +8,8 @@ import Sidebar from './components/Sidebar'
 import ReportModal from './components/ReportModel'
 import AlertBanner from './components/AlertBanner'
 import AuthPage from './components/AuthPage'
+import EmployeeDashboard from './components/EmployeeDashboard'
+import EmployeeAuthPage from './components/EmployeeAuthPage'
 import { supabase } from './services/supabaseClient'
 import { searchNepalLocation } from './services/geocodingService'
 
@@ -21,6 +23,8 @@ export default function App() {
   const [theme, setTheme] = useState(() => localStorage.getItem('aapat-theme') || 'light')
   const [session, setSession] = useState(null)
   const [authLoading, setAuthLoading] = useState(true)
+  const [employeeView, setEmployeeView] = useState(false)
+  const [employeeLogin, setEmployeeLogin] = useState(false)
   const [incidents, setIncidents] = useState([]); const [target, setTarget] = useState(null); const [picked, setPicked] = useState(null); const [reportOpen, setReportOpen] = useState(false); const [demoMode, setDemoMode] = useState(false); const [loading, setLoading] = useState(true); const [lastUpdated, setLastUpdated] = useState('—'); const [error, setError] = useState('')
   useEffect(() => {
     document.documentElement.dataset.theme = theme
@@ -46,6 +50,8 @@ export default function App() {
   async function submit(form) { const report = { ...form, id: `local-${Date.now()}`, created_at: new Date().toISOString() }; if (supabase) { const { error: insertError } = await supabase.from('incidents').insert([form]); if (!insertError) { await refresh(); return } } const saved = JSON.parse(localStorage.getItem('aapat-incidents') || '[]'); localStorage.setItem('aapat-incidents', JSON.stringify([report, ...saved])); await refresh() }
   const toggleTheme = () => setTheme((value) => value === 'light' ? 'dark' : 'light')
   if (authLoading) return <div className="auth-loading"><Loader2 size={24} className="animate-spin" /> Loading secure access...</div>
-  if (!session) return <AuthPage theme={theme} onToggleTheme={toggleTheme} />
+  if (!session && employeeLogin) return <EmployeeAuthPage theme={theme} onToggleTheme={toggleTheme} onAuthorized={() => setEmployeeView(true)} onBack={() => setEmployeeLogin(false)} />
+  if (!session) return <AuthPage theme={theme} onToggleTheme={toggleTheme} onEmployeeLogin={() => setEmployeeLogin(true)} />
+  if (employeeView) return <div className="app-shell"><Navbar onSearch={search} onSignOut={() => { setEmployeeView(false); void supabase.auth.signOut() }} theme={theme} onToggleTheme={toggleTheme} /><EmployeeDashboard incidents={incidents} userEmail={session.user.email} onBackToMap={() => setEmployeeView(false)} onRefresh={refresh} loading={loading} onIncidentChange={(next) => setIncidents((current) => current.map((incident) => incident.id === next.id ? next : incident))} /></div>
   return <div className="app-shell">{demoMode && <AlertBanner onDismiss={() => setDemoMode(false)} />}<Navbar onSearch={search} onSignOut={() => { void supabase.auth.signOut() }} theme={theme} onToggleTheme={toggleTheme} /><main className="layout"><Sidebar incidents={incidents} onReport={() => { setPicked(null); setReportOpen(true) }} demoMode={demoMode} onDemoToggle={() => setDemoMode((value) => !value)} lastUpdated={lastUpdated} onRefresh={refresh} loading={loading} /><section className="map-area"><MapView incidents={incidents} target={target} onMapClick={mapClick} />{error && <div className="map-error"><AlertCircle size={18} /> {error}</div>}<button className="fab" onClick={() => { setPicked(null); setReportOpen(true) }} aria-label="Report a hazard"><Plus size={22} /></button></section></main>{reportOpen && <ReportModal coordinates={picked} onClose={() => setReportOpen(false)} onSubmit={submit} />}</div>
 }
