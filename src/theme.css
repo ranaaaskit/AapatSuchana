@@ -1,0 +1,22 @@
+:root { color-scheme: light; }
+:root[data-theme='dark'] { color-scheme: dark; }
+.theme-toggle { display: inline-grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 1px solid #dce5e6; border-radius: 8px; color: #52646c; background: #fff; }
+.theme-toggle:hover { color: #2f819d; border-color: #78b4be; }
+.auth-theme-toggle { margin-left: auto; }
+[data-theme='dark'] body, [data-theme='dark'] .app-shell { color: #e7f0f1; background: #14252c; }
+[data-theme='dark'] .topbar, [data-theme='dark'] .sidebar, [data-theme='dark'] .stat-card, [data-theme='dark'] .incident-row, [data-theme='dark'] .weather-card, [data-theme='dark'] .report-modal { color: #e7f0f1; background: #1b323a; border-color: #2b4852; }
+[data-theme='dark'] .topbar { box-shadow: 0 1px 0 #2b4852; }
+[data-theme='dark'] .brand strong, [data-theme='dark'] .sidebar-title h2, [data-theme='dark'] .incident-row strong, [data-theme='dark'] .weather-card strong { color: #f5fbfb; }
+[data-theme='dark'] .brand div span, [data-theme='dark'] .sidebar-intro, [data-theme='dark'] .incident-row span, [data-theme='dark'] .weather-card p, [data-theme='dark'] .section-heading { color: #a9c0c5; }
+[data-theme='dark'] .search-shell, [data-theme='dark'] .search-shell input, [data-theme='dark'] .signout-button, [data-theme='dark'] .theme-toggle { color: #e7f0f1; background: #14252c; border-color: #3b5b64; }
+[data-theme='dark'] .search-shell input::placeholder { color: #8ca7ad; }
+[data-theme='dark'] .primary-button, [data-theme='dark'] .refresh-button, [data-theme='dark'] .weather-button { color: #dff7f5; }
+[data-theme='dark'] .map-error { color: #ffd9d5; background: #542e31; }
+[data-theme='dark'] .auth-page, [data-theme='dark'] .auth-panel, [data-theme='dark'] .auth-loading { color: #e7f0f1; background: #14252c; }
+[data-theme='dark'] .auth-panel { background: #1b323a; }
+[data-theme='dark'] .auth-brand div span, [data-theme='dark'] .auth-copy p, [data-theme='dark'] .auth-form label { color: #a9c0c5; }
+[data-theme='dark'] .auth-form input { color: #e7f0f1; background: #14252c; border-color: #3b5b64; }
+[data-theme='dark'] .auth-form input::placeholder { color: #8ca7ad; }
+[data-theme='dark'] .auth-form input:focus { border-color: #78b4be; box-shadow: 0 0 0 3px #2f819d55; }
+.auth-aside { background-image: linear-gradient(180deg, #153d4a22, #09242dcc), url('https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1800&q=85'); background-size: cover; background-position: center; }
+@media (max-width: 950px) { .nav-status .theme-toggle { margin-left: auto; } }

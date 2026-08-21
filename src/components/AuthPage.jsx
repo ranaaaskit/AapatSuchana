@@ -1,9 +1,9 @@
 import { useState } from 'react'
-import { ArrowRight, HeartPulse, Loader2, ShieldCheck } from 'lucide-react'
+import { ArrowRight, HeartPulse, Loader2, Moon, ShieldCheck, Sun } from 'lucide-react'
 import { supabase } from '../services/supabaseClient'
 import '../auth.css'
 
-export default function AuthPage() {
+export default function AuthPage({ theme, onToggleTheme }) {
   const [mode, setMode] = useState('login')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -32,7 +32,7 @@ export default function AuthPage() {
   return (
     <main className="auth-page">
       <section className="auth-panel">
-        <div className="auth-brand"><span className="brand-mark"><HeartPulse size={21} /></span><div><strong>AapatSuchana</strong><span>COMMUNITY SAFETY MAP</span></div></div>
+        <div className="auth-brand"><span className="brand-mark"><HeartPulse size={21} /></span><div><strong>AapatSuchana</strong><span>COMMUNITY SAFETY MAP</span></div><button className="theme-toggle auth-theme-toggle" onClick={onToggleTheme} aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}>{theme === 'light' ? <Moon size={17} /> : <Sun size={17} />}</button></div>
         <div className="auth-copy"><span className="auth-kicker"><ShieldCheck size={15} /> Trusted community reports</span><h1>{mode === 'login' ? 'Welcome back.' : 'Join the safety network.'}</h1><p>{mode === 'login' ? 'Sign in to follow hazards and publish verified local updates.' : 'Create an account to help your community see hazards as they happen.'}</p></div>
         <form className="auth-form" onSubmit={submit}>
           <label>Email address<input type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="you@example.com" autoComplete="email" required /></label>

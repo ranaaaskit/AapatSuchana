@@ -18,9 +18,14 @@ const fallbackIncidents = [
 ]
 
 export default function App() {
+  const [theme, setTheme] = useState(() => localStorage.getItem('aapat-theme') || 'light')
   const [session, setSession] = useState(null)
   const [authLoading, setAuthLoading] = useState(true)
   const [incidents, setIncidents] = useState([]); const [target, setTarget] = useState(null); const [picked, setPicked] = useState(null); const [reportOpen, setReportOpen] = useState(false); const [demoMode, setDemoMode] = useState(false); const [loading, setLoading] = useState(true); const [lastUpdated, setLastUpdated] = useState('—'); const [error, setError] = useState('')
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme
+    localStorage.setItem('aapat-theme', theme)
+  }, [theme])
   useEffect(() => {
     let active = true
     supabase.auth.getSession().then(({ data }) => { if (active) { setSession(data.session); setAuthLoading(false) } })
@@ -39,7 +44,8 @@ export default function App() {
   async function search(query) { setTarget(await searchNepalLocation(query)) }
   function mapClick(coordinates) { setPicked(coordinates); setReportOpen(true) }
   async function submit(form) { const report = { ...form, id: `local-${Date.now()}`, created_at: new Date().toISOString() }; if (supabase) { const { error: insertError } = await supabase.from('incidents').insert([form]); if (!insertError) { await refresh(); return } } const saved = JSON.parse(localStorage.getItem('aapat-incidents') || '[]'); localStorage.setItem('aapat-incidents', JSON.stringify([report, ...saved])); await refresh() }
+  const toggleTheme = () => setTheme((value) => value === 'light' ? 'dark' : 'light')
   if (authLoading) return <div className="auth-loading"><Loader2 size={24} className="animate-spin" /> Loading secure access...</div>
-  if (!session) return <AuthPage />
-  return <div className="app-shell">{demoMode && <AlertBanner onDismiss={() => setDemoMode(false)} />}<Navbar onSearch={search} onSignOut={() => { void supabase.auth.signOut() }} /><main className="layout"><Sidebar incidents={incidents} onReport={() => { setPicked(null); setReportOpen(true) }} demoMode={demoMode} onDemoToggle={() => setDemoMode((value) => !value)} lastUpdated={lastUpdated} onRefresh={refresh} loading={loading} /><section className="map-area"><MapView incidents={incidents} target={target} onMapClick={mapClick} />{error && <div className="map-error"><AlertCircle size={18} /> {error}</div>}<button className="fab" onClick={() => { setPicked(null); setReportOpen(true) }} aria-label="Report a hazard"><Plus size={22} /></button></section></main>{reportOpen && <ReportModal coordinates={picked} onClose={() => setReportOpen(false)} onSubmit={submit} />}</div>
+  if (!session) return <AuthPage theme={theme} onToggleTheme={toggleTheme} />
+  return <div className="app-shell">{demoMode && <AlertBanner onDismiss={() => setDemoMode(false)} />}<Navbar onSearch={search} onSignOut={() => { void supabase.auth.signOut() }} theme={theme} onToggleTheme={toggleTheme} /><main className="layout"><Sidebar incidents={incidents} onReport={() => { setPicked(null); setReportOpen(true) }} demoMode={demoMode} onDemoToggle={() => setDemoMode((value) => !value)} lastUpdated={lastUpdated} onRefresh={refresh} loading={loading} /><section className="map-area"><MapView incidents={incidents} target={target} onMapClick={mapClick} />{error && <div className="map-error"><AlertCircle size={18} /> {error}</div>}<button className="fab" onClick={() => { setPicked(null); setReportOpen(true) }} aria-label="Report a hazard"><Plus size={22} /></button></section></main>{reportOpen && <ReportModal coordinates={picked} onClose={() => setReportOpen(false)} onSubmit={submit} />}</div>
 }
