@@ -7,7 +7,8 @@
 .auth-employee-top { padding: 7px 10px; border: 1px solid #cfe1e3; border-radius: 7px; color: #2f819d; background: #e3f2f3; font-size: 11px; font-weight: 700; }
 .auth-employee-top:hover { border-color: #78b4be; background: #d8edef; }
 [data-theme='dark'] body, [data-theme='dark'] .app-shell { color: #e7f0f1; background: #14252c; }
-[data-theme='dark'] .topbar, [data-theme='dark'] .sidebar, [data-theme='dark'] .stat-card, [data-theme='dark'] .incident-row, [data-theme='dark'] .weather-card, [data-theme='dark'] .report-modal { color: #e7f0f1; background: #1b323a; border-color: #2b4852; }
+[data-theme='dark'] .topbar, [data-theme='dark'] .sidebar, [data-theme='dark'] .stat-card, [data-theme='dark'] .incident-row, [data-theme='dark'] .weather-card, [data-theme='dark'] .report-modal { color: #e7f0f1; background-color: #1b323a; border-color: #2b4852; }
+[data-theme='dark'] .topbar { background-image: linear-gradient(90deg, #1b323af7 0%, #1b323aeb 58%, #1b323ad9 100%), url('./assets/navbar-skyline.svg'); background-size: cover, auto 42px; }
 [data-theme='dark'] .topbar { box-shadow: 0 1px 0 #2b4852; }
 [data-theme='dark'] .brand strong, [data-theme='dark'] .sidebar-title h2, [data-theme='dark'] .incident-row strong, [data-theme='dark'] .weather-card strong { color: #f5fbfb; }
 [data-theme='dark'] .brand div span, [data-theme='dark'] .sidebar-intro, [data-theme='dark'] .incident-row span, [data-theme='dark'] .weather-card p, [data-theme='dark'] .section-heading { color: #a9c0c5; }

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 150" role="img" aria-label="Nepali pagoda, stupa, prayer flags, and Himalayan peaks">
+  <path fill="#d9e1df" d="m0 108 105-35 82 25 100-60 74 48 97-30 83 39 92-55 90 57 93-34 83 40 107-51 104 56 83-28v70H0z"/>
+  <path fill="#394b4d" d="M0 116h120v-13l25-10 25 10v13h48v-8l18-9 18 9v8h60v-17l27-13 27 13v17h52V88l20-10 20 10v28h48v-18l30-14 30 14v18h51v-9l20-12 20 12v9h52V71l9-9 9 9v45h38v-11l28-12 28 12v11h47v-17l21-11 21 11v17h55v-9l19-10 19 10v9h72v34H0z"/>
+  <g fill="#b45243">
+    <path d="M190 116V77h10V64h10v13h10v39z"/>
+    <path d="m183 78 27-18 27 18zM176 91h68l-8 7h-52z"/>
+    <path d="M725 116V72h8V58h8v14h8v44z"/>
+    <path d="m714 72 23-17 23 17zM707 83h60l-7 7h-46z"/>
+  </g>
+  <g fill="#253536">
+    <path d="M490 116V72h9V56h9V41h5V28h5v13h5v15h9v16h9v44z"/>
+    <path d="M476 73h56l-8 8h-40zM468 88h72l-9 8h-54z"/>
+    <path d="M1018 116V74h7V60h5V47h5v13h7v14h7v42z"/>
+  </g>
+  <g stroke="#b45243" stroke-width="2" fill="none"><path d="M305 35v45M305 42l24 10-24 10 24 10-24 8"/><path d="M305 43 296 51l9 8 9-8z"/><path d="M868 31v48M868 39l24 10-24 10 24 10-24 8"/><path d="M868 40 859 48l9 8 9-8z"/></g>
+  <path stroke="#b45243" stroke-width="3" d="M0 117h1200"/>
+  <path fill="#b45243" opacity=".16" d="M0 121h1200v29H0z"/>
+</svg>

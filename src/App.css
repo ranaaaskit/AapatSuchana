@@ -37,14 +37,26 @@
 }
 
 .topbar {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   height: 76px;
   display: flex;
   align-items: center;
   gap: 32px;
   padding: 0 32px;
   background: #fff;
+  background-image: linear-gradient(90deg, #ffffffeb 0%, #ffffffd9 48%, #ffffffbd 100%), url('./assets/navbar-skyline.svg');
+  background-repeat: no-repeat;
+  background-position: center, center bottom;
+  background-size: cover, 100% auto;
   border-bottom: 1px solid #e4eaeb;
   z-index: 10;
+}
+
+.topbar>* {
+  position: relative;
+  z-index: 1;
 }
 
 .brand {

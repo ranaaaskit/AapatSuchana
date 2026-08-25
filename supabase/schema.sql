@@ -11,30 +11,33 @@ create table if not exists public.incidents (
 );
 
 alter table public.incidents add column if not exists user_id uuid references auth.users(id) default auth.uid();
-alter table public.incidents add column if not exists status text not null default 'New' check (status in ('New', 'Investigating', 'Resolved'));
+alter table public.incidents add column if not exists status text not null default 'pending';
 alter table public.incidents add column if not exists verified boolean not null default false;
+
+alter table public.incidents drop constraint if exists incidents_status_check;
+update public.incidents set status = 'approved' where status in ('New', 'Investigating', 'Resolved');
+alter table public.incidents add constraint incidents_status_check check (status in ('pending', 'approved', 'rejected'));
+alter table public.incidents alter column status set default 'pending';
 
 alter table public.incidents enable row level security;
 
 drop policy if exists "Anyone can read incidents" on public.incidents;
+drop policy if exists "Anyone can read approved incidents" on public.incidents;
 drop policy if exists "Anyone can publish incidents" on public.incidents;
 drop policy if exists "Authenticated users can publish incidents" on public.incidents;
+drop policy if exists "Authenticated users can publish pending incidents" on public.incidents;
 drop policy if exists "Authenticated users can update incidents" on public.incidents;
+drop policy if exists "Employees can read all incidents" on public.incidents;
+drop policy if exists "Employees can update incidents" on public.incidents;
 
-create policy "Anyone can read incidents"
+create policy "Anyone can read approved incidents"
   on public.incidents for select
-  using (true);
+  using (status = 'approved');
 
-create policy "Authenticated users can publish incidents"
+create policy "Authenticated users can publish pending incidents"
   on public.incidents for insert
   to authenticated
-  with check (auth.uid() = user_id);
-
-create policy "Authenticated users can update incidents"
-  on public.incidents for update
-  to authenticated
-  using (true)
-  with check (true);
+  with check (auth.uid() = user_id and status = 'pending');
 
 do $$
 begin
@@ -60,6 +63,26 @@ create policy "Employees can read their own access"
   on public.employee_accounts for select
   to authenticated
   using (email = lower(auth.jwt() ->> 'email'));
+
+create policy "Employees can read all incidents"
+  on public.incidents for select
+  to authenticated
+  using (exists (
+    select 1 from public.employee_accounts
+    where email = lower(auth.jwt() ->> 'email') and active = true
+  ));
+
+create policy "Employees can update incidents"
+  on public.incidents for update
+  to authenticated
+  using (exists (
+    select 1 from public.employee_accounts
+    where email = lower(auth.jwt() ->> 'email') and active = true
+  ))
+  with check (exists (
+    select 1 from public.employee_accounts
+    where email = lower(auth.jwt() ->> 'email') and active = true
+  ));
 
 -- Add approved employee emails here from the Supabase SQL Editor.
 -- Example: insert into public.employee_accounts (email, display_name)

@@ -1,9 +1,9 @@
 .auth-loading { min-height: 100vh; display: grid; place-items: center; gap: 10px; background: #f5f7f7; color: #2f819d; font-size: 13px; font-weight: 700; }
 .auth-page { min-height: 100vh; display: grid; grid-template-columns: minmax(360px, 520px) 1fr; background: #f5f7f7; color: #17232d; }
 .auth-panel { display: flex; flex-direction: column; justify-content: center; width: min(100%, 520px); padding: 48px clamp(28px, 6vw, 80px); background: #fff; }
-.auth-brand { display: flex; align-items: center; gap: 11px; margin-bottom: 92px; }
-.logo-box { display: grid; place-items: center; flex: 0 0 42px; width: 42px; height: 42px; overflow: hidden; border: 1px solid #dce5e6; border-radius: 10px; background: #f4f8f8; }
-.auth-logo { display: block; width: 38px; height: 38px; object-fit: contain; object-position: center; }
+.auth-brand { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin-bottom: 82px; }
+.logo-box { display: grid; place-items: center; flex: 0 1 148px; width: 148px; height: 52px; overflow: hidden; border: 0; border-radius: 0; background: transparent; }
+.auth-logo { display: block; width: 140px; height: 52px; object-fit: contain; object-position: left center; }
 .employee-brand-label { display: inline-flex; align-items: center; gap: 6px; color: #708087; font-size: 11px; font-weight: 700; }
 .auth-brand strong { display: block; font-family: 'Space Grotesk'; font-size: 18px; line-height: 1.1; }
 .auth-brand div span { display: block; margin-top: 4px; color: #7b8a91; font-size: 8px; font-weight: 700; letter-spacing: .17em; }
@@ -32,4 +32,4 @@
 .auth-aside > span { margin-bottom: 18px; color: #a4d7d4; font-size: 11px; font-weight: 700; letter-spacing: .16em; }
 .auth-aside h2 { margin: 0; font-family: 'Space Grotesk'; font-size: clamp(42px, 6vw, 82px); line-height: .95; letter-spacing: -.03em; }
 .auth-aside p { max-width: 360px; margin: 25px 0 0; color: #d3edef; font-size: 14px; line-height: 1.65; }
-@media (max-width: 760px) { .auth-page { display: block; }.auth-panel { min-height: 100vh; width: 100%; padding: 30px 24px; }.auth-brand { margin-bottom: 70px; }.auth-aside { display: none; } }
+@media (max-width: 760px) { .auth-page { display: block; }.auth-panel { min-height: 100vh; width: 100%; padding: 30px 24px; }.auth-brand { margin-bottom: 64px; }.logo-box { flex-basis: 136px; width: 136px; }.auth-logo { width: 128px; }.auth-aside { display: none; } }
