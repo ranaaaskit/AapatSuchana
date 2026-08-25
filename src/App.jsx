@@ -13,11 +13,12 @@ import EmployeeAuthPage from './components/EmployeeAuthPage'
 import { supabase } from './services/supabaseClient'
 import { searchNepalLocation } from './services/geocodingService'
 import { fetchLiveHazards } from './services/hazardService'
+import { fetchIncidents } from './services/incidentService'
 
 const fallbackIncidents = [
-  { id: 'fallback-kathmandu', title: 'Bagmati river watch', type: 'Flood', severity: 'Medium', lat: 27.7172, lng: 85.324, description: 'Water levels are being monitored near the river corridor.', created_at: new Date().toISOString() },
-  { id: 'fallback-pokhara', title: 'Sedi road debris', type: 'Roadblock', severity: 'Low', lat: 28.2096, lng: 83.9856, description: 'Travelers report debris along the Sedi road.', created_at: new Date().toISOString() },
-  { id: 'fallback-sindhupalchok', title: 'Highway slope movement', type: 'Landslide', severity: 'High', lat: 27.951, lng: 85.684, description: 'Slope movement reported near the highway.', created_at: new Date().toISOString() },
+  { id: 'fallback-kathmandu', title: 'Bagmati river watch', type: 'Flood', severity: 'Medium', status: 'approved', lat: 27.7172, lng: 85.324, description: 'Water levels are being monitored near the river corridor.', created_at: new Date().toISOString() },
+  { id: 'fallback-pokhara', title: 'Sedi road debris', type: 'Roadblock', severity: 'Low', status: 'approved', lat: 28.2096, lng: 83.9856, description: 'Travelers report debris along the Sedi road.', created_at: new Date().toISOString() },
+  { id: 'fallback-sindhupalchok', title: 'Highway slope movement', type: 'Landslide', severity: 'High', status: 'approved', lat: 27.951, lng: 85.684, description: 'Slope movement reported near the highway.', created_at: new Date().toISOString() },
 ]
 
 export default function App() {
@@ -37,7 +38,7 @@ export default function App() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, nextSession) => setSession(nextSession))
     return () => { active = false; subscription.unsubscribe() }
   }, [])
-  const refresh = useCallback(async () => { setLoading(true); setError(''); const saved = JSON.parse(localStorage.getItem('aapat-incidents') || '[]'); const [liveHazards, reportResult] = await Promise.all([fetchLiveHazards().catch(() => []), supabase.from('incidents').select('*').order('created_at', { ascending: false }).limit(200)]); const reports = reportResult.error ? [...saved, ...fallbackIncidents] : [...(reportResult.data || []), ...saved]; setIncidents([...liveHazards, ...reports]); setLastUpdated(new Date().toLocaleTimeString('en-NP', { hour: '2-digit', minute: '2-digit' })); if (reportResult.error && !liveHazards.length) setLastUpdated('Offline reports'); setLoading(false) }, [])
+  const refresh = useCallback(async () => { setLoading(true); setError(''); const saved = JSON.parse(localStorage.getItem('aapat-incidents') || '[]'); const visibleSaved = saved.filter((incident) => employeeView || incident.status === 'approved'); const [liveHazards, reportResult] = await Promise.all([fetchLiveHazards().catch(() => []), fetchIncidents({ includePending: employeeView })]); const reports = reportResult.error ? [...visibleSaved, ...fallbackIncidents] : [...(reportResult.data || []), ...visibleSaved]; setIncidents([...liveHazards, ...reports]); setLastUpdated(new Date().toLocaleTimeString('en-NP', { hour: '2-digit', minute: '2-digit' })); if (reportResult.error && !liveHazards.length) setLastUpdated('Offline reports'); setLoading(false) }, [employeeView])
   useEffect(() => {
     queueMicrotask(() => { void refresh() })
     const timer = window.setInterval(() => { void refresh() }, 15 * 60 * 1000)
@@ -50,7 +51,7 @@ export default function App() {
   }, [refresh])
   async function search(query) { setTarget(await searchNepalLocation(query)) }
   function mapClick(coordinates) { setPicked(coordinates); setReportOpen(true) }
-  async function submit(form) { const report = { ...form, id: `local-${Date.now()}`, created_at: new Date().toISOString() }; if (supabase) { const { error: insertError } = await supabase.from('incidents').insert([form]); if (!insertError) { await refresh(); return } } const saved = JSON.parse(localStorage.getItem('aapat-incidents') || '[]'); localStorage.setItem('aapat-incidents', JSON.stringify([report, ...saved])); await refresh() }
+  async function submit(form) { const report = { ...form, status: 'pending', id: `local-${Date.now()}`, created_at: new Date().toISOString() }; if (supabase) { const { error: insertError } = await supabase.from('incidents').insert([{ ...form, status: 'pending' }]); if (!insertError) { await refresh(); return } } const saved = JSON.parse(localStorage.getItem('aapat-incidents') || '[]'); localStorage.setItem('aapat-incidents', JSON.stringify([report, ...saved])); await refresh() }
   const toggleTheme = () => setTheme((value) => value === 'light' ? 'dark' : 'light')
   if (authLoading) return <div className="auth-loading"><Loader2 size={24} className="animate-spin" /> Loading secure access...</div>
   if (!session && employeeLogin) return <EmployeeAuthPage theme={theme} onToggleTheme={toggleTheme} onAuthorized={() => setEmployeeView(true)} onBack={() => setEmployeeLogin(false)} />
