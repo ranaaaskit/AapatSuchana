@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { ArrowRight, HeartPulse, Loader2, Moon, ShieldCheck, Sun } from 'lucide-react'
+import { ArrowRight, Loader2, Moon, ShieldCheck, Sun } from 'lucide-react'
 import { supabase } from '../services/supabaseClient'
+import logo from '../assets/aapatsuchana-logo.svg'
 import '../auth.css'
 
 export default function AuthPage({ theme, onToggleTheme, onEmployeeLogin }) {
@@ -32,7 +33,7 @@ export default function AuthPage({ theme, onToggleTheme, onEmployeeLogin }) {
   return (
     <main className="auth-page">
       <section className="auth-panel">
-        <div className="auth-brand"><span className="brand-mark"><HeartPulse size={21} /></span><div><strong>AapatSuchana</strong><span>COMMUNITY SAFETY MAP</span></div><div className="auth-top-actions"><button className="auth-employee-top" onClick={onEmployeeLogin}>Employee?</button><button className="theme-toggle" onClick={onToggleTheme} aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}>{theme === 'light' ? <Moon size={17} /> : <Sun size={17} />}</button></div></div>
+        <div className="auth-brand"><span className="logo-box"><img className="auth-logo" src={logo} alt="AapatSuchana" /></span><div className="auth-top-actions"><button className="auth-employee-top" onClick={onEmployeeLogin}>Employee?</button><button className="theme-toggle" onClick={onToggleTheme} aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}>{theme === 'light' ? <Moon size={17} /> : <Sun size={17} />}</button></div></div>
         <div className="auth-copy"><span className="auth-kicker"><ShieldCheck size={15} /> Trusted community reports</span><h1>{mode === 'login' ? 'Welcome back.' : 'Join the safety network.'}</h1><p>{mode === 'login' ? 'Sign in to follow hazards and publish verified local updates.' : 'Create an account to help your community see hazards as they happen.'}</p></div>
         <form className="auth-form" onSubmit={submit}>
           <label>Email address<input type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="you@example.com" autoComplete="email" required /></label>

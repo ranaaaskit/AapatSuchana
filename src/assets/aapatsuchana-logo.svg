@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 180" role="img" aria-labelledby="title desc">
+  <title id="title">AapatSuchana mountain logo</title>
+  <desc id="desc">A mountain, sun, and river mark</desc>
+  <circle cx="164" cy="40" r="19" fill="#09171b" stroke="#a34b9a" stroke-width="2"/>
+  <path d="M20 118 76 62l27 27 38-41 69 70H20Z" fill="#071619" stroke="#a34b9a" stroke-width="3" stroke-linejoin="round"/>
+  <path d="m20 118 40-3 28-31 17 17 36-39 25 25 17-11 27 25-58-2-28 4-27-3-25 6-52 2Z" fill="#0d2326" stroke="#a34b9a" stroke-width="2"/>
+  <path d="M35 132c29-11 70-10 101-3 20 4 37 12 53 22-36 10-70 4-101-5-20-6-37-10-53-14Z" fill="#071619" stroke="#a34b9a" stroke-width="2"/>
+  <path d="M57 133c31-5 62-2 91 7-22 5-44 3-66-2-10-2-18-3-25-5Z" fill="#1b373a"/>
+  <text x="110" y="169" text-anchor="middle" fill="#a5a0a8" font-family="Arial, sans-serif" font-size="13" font-weight="700" letter-spacing="1.5">AAPATSUCHANA</text>
+</svg>

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { ArrowRight, BriefcaseBusiness, Loader2, Moon, ShieldCheck, Sun } from 'lucide-react'
 import { supabase } from '../services/supabaseClient'
+import logo from '../assets/aapatsuchana-logo.svg'
 import '../auth.css'
 
 export default function EmployeeAuthPage({ theme, onToggleTheme, onAuthorized, onBack }) {
@@ -33,7 +34,7 @@ export default function EmployeeAuthPage({ theme, onToggleTheme, onAuthorized, o
   return (
     <main className="auth-page employee-auth-page">
       <section className="auth-panel">
-        <div className="auth-brand"><span className="brand-mark"><BriefcaseBusiness size={20} /></span><div><strong>Employee access</strong><span>AAPATSUCHANA OPERATIONS</span></div><button className="theme-toggle auth-theme-toggle" onClick={onToggleTheme} aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}>{theme === 'light' ? <Moon size={17} /> : <Sun size={17} />}</button></div>
+        <div className="auth-brand"><span className="logo-box"><img className="auth-logo" src={logo} alt="AapatSuchana" /></span><span className="employee-brand-label"><BriefcaseBusiness size={16} /> Employee access</span><button className="theme-toggle auth-theme-toggle" onClick={onToggleTheme} aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}>{theme === 'light' ? <Moon size={17} /> : <Sun size={17} />}</button></div>
         <div className="auth-copy"><span className="auth-kicker"><ShieldCheck size={15} /> Restricted workspace</span><h1>Operations, in focus.</h1><p>Sign in with your approved employee account to review, verify, and resolve community reports.</p></div>
         <form className="auth-form" onSubmit={submit}><label>Employee email<input type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="employee@your-org.com" autoComplete="username" required /></label><label>Password<input type="password" value={password} onChange={(event) => setPassword(event.target.value)} placeholder="Your secure password" autoComplete="current-password" required /></label>{error && <p className="auth-error" role="alert">{error}</p>}<button className="auth-submit" disabled={loading}>{loading ? <Loader2 size={18} className="animate-spin" /> : <ArrowRight size={18} />}Enter employee dashboard</button></form>
         <button className="auth-switch" onClick={onBack}>Back to public sign in</button>
