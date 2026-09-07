@@ -1,16 +1,50 @@
-# React + Vite
+# AapatSuchana
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A Nepal hazard reporting application with a React/Vite frontend and a Django REST API backend.
 
-Currently, two official plugins are available:
+## Run the application
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Start the Django API in one terminal:
 
-## React Compiler
+```powershell
+& backend/.venv/Scripts/python.exe backend/manage.py migrate
+& backend/.venv/Scripts/python.exe backend/manage.py runserver
+```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Start React in a second terminal:
 
-## Expanding the ESLint configuration
+```powershell
+npm run dev
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+The frontend runs at `http://localhost:5173` and the API at `http://127.0.0.1:8000`.
+
+## Public login
+
+Use **Sign up** in the application with an email address and a password of at least six characters. The account is created in Django and then logged in automatically. Later, use the same email and password with **Sign in**.
+
+## Employee login
+
+An employee must have both a normal Django user account and an active `EmployeeAccount` record with the same email address.
+
+1. Create an administrator:
+
+   ```powershell
+   & backend/.venv/Scripts/python.exe backend/manage.py createsuperuser
+   ```
+
+2. Open `http://127.0.0.1:8000/admin/` and sign in.
+3. Under **Users**, create the employee's email and password.
+4. Under **Employee accounts**, create an active record with exactly the same email.
+5. Use **Employee?** on the frontend and sign in with those credentials.
+
+Employee accounts can view pending incidents and update incident status and verification fields. Public users can only see approved incidents.
+
+## API endpoints
+
+- `POST /api/auth/register/` creates a public user account.
+- `POST /api/auth/token/` returns JWT access and refresh tokens.
+- `GET /api/auth/me/` returns the current user and employee status.
+- `GET /api/incidents/` lists incidents according to the user's access.
+- `POST /api/incidents/` creates a pending incident.
+- `PATCH /api/incidents/<id>/` updates an incident for active employees.

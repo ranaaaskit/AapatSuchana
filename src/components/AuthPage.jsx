@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { ArrowRight, Loader2, Moon, ShieldCheck, Sun } from 'lucide-react'
-import { supabase } from '../services/supabaseClient'
+import { signIn, signUp } from '../services/apiClient'
 import logo from '../assets/aapatsuchana-logo.svg'
 import '../auth.css'
 
-export default function AuthPage({ theme, onToggleTheme, onEmployeeLogin }) {
+export default function AuthPage({ theme, onToggleTheme, onEmployeeLogin, onAuthenticated }) {
   const [mode, setMode] = useState('login')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -18,14 +18,11 @@ export default function AuthPage({ theme, onToggleTheme, onEmployeeLogin }) {
     setError('')
     setMessage('')
 
-    const result = mode === 'login'
-      ? await supabase.auth.signInWithPassword({ email, password })
-      : await supabase.auth.signUp({ email, password, options: { emailRedirectTo: window.location.origin } })
-
-    if (result.error) {
-      setError(result.error.message)
-    } else if (mode === 'signup' && !result.data.session) {
-      setMessage('Account created. Check your email to confirm your account.')
+    try {
+      const session = mode === 'login' ? await signIn(email, password) : await signUp(email, password)
+      onAuthenticated(session)
+    } catch (requestError) {
+      setError(requestError.message)
     }
     setLoading(false)
   }

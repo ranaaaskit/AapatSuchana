@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { CheckCircle2, ClipboardList, Map, MapPin, RefreshCw, Search, ShieldCheck, TriangleAlert } from 'lucide-react'
-import { supabase } from '../services/supabaseClient'
+import { updateIncident as updateIncidentApi } from '../services/apiClient'
 import ThresholdConfig from './ThresholdConfig'
 import '../employee.css'
 
@@ -29,8 +29,8 @@ export default function EmployeeDashboard({ incidents, userEmail, onBackToMap, o
     setSavingId(incident.id)
     const next = { ...incident, ...changes }
     onIncidentChange(next)
-    if (supabase && !String(incident.id).startsWith('fallback-') && !String(incident.id).startsWith('local-')) {
-      await supabase.from('incidents').update(changes).eq('id', incident.id)
+    if (!String(incident.id).startsWith('fallback-') && !String(incident.id).startsWith('local-')) {
+      await updateIncidentApi(incident.id, changes)
     }
     setSavingId(null)
   }

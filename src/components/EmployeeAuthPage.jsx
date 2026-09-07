@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { ArrowRight, BriefcaseBusiness, Loader2, Moon, ShieldCheck, Sun } from 'lucide-react'
-import { supabase } from '../services/supabaseClient'
+import { getCurrentUser, signIn, signOut } from '../services/apiClient'
 import logo from '../assets/aapatsuchana-logo.svg'
 import '../auth.css'
 
@@ -14,20 +14,15 @@ export default function EmployeeAuthPage({ theme, onToggleTheme, onAuthorized, o
     event.preventDefault()
     setLoading(true)
     setError('')
-    const { data, error: signInError } = await supabase.auth.signInWithPassword({ email, password })
-    if (signInError) {
-      setError(signInError.message)
-      setLoading(false)
-      return
+    try {
+      const session = await signIn(email, password)
+      const currentUser = await getCurrentUser()
+      if (!currentUser.is_employee) throw new Error('This account is not approved for employee access.')
+      onAuthorized(session, currentUser.employee.display_name)
+    } catch (requestError) {
+      signOut()
+      setError(requestError.message || 'Employee access is not configured yet.')
     }
-    const { data: employee, error: employeeError } = await supabase.from('employee_accounts').select('display_name').eq('email', email.trim().toLowerCase()).eq('active', true).maybeSingle()
-    if (employeeError || !employee) {
-      await supabase.auth.signOut()
-      setError(employeeError ? 'Employee access is not configured yet. Ask an administrator to add your account.' : 'This account is not approved for employee access.')
-      setLoading(false)
-      return
-    }
-    onAuthorized(data.session, employee.display_name)
     setLoading(false)
   }
 
