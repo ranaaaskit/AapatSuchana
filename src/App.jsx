@@ -11,7 +11,7 @@ import NotificationSystem from './components/NotificationSystem'
 import AuthPage from './components/AuthPage'
 import EmployeeDashboard from './components/EmployeeDashboard'
 import EmployeeAuthPage from './components/EmployeeAuthPage'
-import { supabase } from './services/supabaseClient'
+import { createIncident, getSession, signOut } from './services/apiClient'
 import { searchNepalLocation } from './services/geocodingService'
 import { fetchLiveHazards } from './services/hazardService'
 import { fetchIncidents } from './services/incidentService'
@@ -35,9 +35,8 @@ export default function App() {
   }, [theme])
   useEffect(() => {
     let active = true
-    supabase.auth.getSession().then(({ data }) => { if (active) { setSession(data.session); setAuthLoading(false) } })
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, nextSession) => setSession(nextSession))
-    return () => { active = false; subscription.unsubscribe() }
+    getSession().then((nextSession) => { if (active) { setSession(nextSession); setAuthLoading(false) } })
+    return () => { active = false }
   }, [])
   const refresh = useCallback(async () => { setLoading(true); setError(''); const saved = JSON.parse(localStorage.getItem('aapat-incidents') || '[]'); const visibleSaved = saved.filter((incident) => employeeView || incident.status === 'approved'); const [liveHazards, reportResult] = await Promise.all([fetchLiveHazards().catch(() => []), fetchIncidents({ includePending: employeeView })]); const reports = reportResult.error ? [...visibleSaved, ...fallbackIncidents] : [...(reportResult.data || []), ...visibleSaved]; setIncidents([...liveHazards, ...reports]); setLastUpdated(new Date().toLocaleTimeString('en-NP', { hour: '2-digit', minute: '2-digit' })); if (reportResult.error && !liveHazards.length) setLastUpdated('Offline reports'); setLoading(false) }, [employeeView])
   useEffect(() => {
@@ -45,19 +44,14 @@ export default function App() {
     const timer = window.setInterval(() => { void refresh() }, 15 * 60 * 1000)
     return () => window.clearInterval(timer)
   }, [refresh])
-  useEffect(() => {
-    if (!supabase) return undefined
-    const channel = supabase.channel('incidents-live').on('postgres_changes', { event: '*', schema: 'public', table: 'incidents' }, () => { void refresh() }).subscribe()
-    return () => { void supabase.removeChannel(channel) }
-  }, [refresh])
   async function search(query) { setTarget(await searchNepalLocation(query)) }
   function mapClick(coordinates) { setPicked(coordinates); setReportOpen(true) }
-  async function submit(form) { const report = { ...form, status: 'pending', id: `local-${Date.now()}`, created_at: new Date().toISOString() }; if (supabase) { const { error: insertError } = await supabase.from('incidents').insert([{ ...form, status: 'pending' }]); if (!insertError) { await refresh(); return } } const saved = JSON.parse(localStorage.getItem('aapat-incidents') || '[]'); localStorage.setItem('aapat-incidents', JSON.stringify([report, ...saved])); await refresh() }
+  async function submit(form) { const report = { ...form, status: 'pending', id: `local-${Date.now()}`, created_at: new Date().toISOString() }; try { await createIncident(form); await refresh(); return } catch { const saved = JSON.parse(localStorage.getItem('aapat-incidents') || '[]'); localStorage.setItem('aapat-incidents', JSON.stringify([report, ...saved])); await refresh() } }
   const toggleTheme = () => setTheme((value) => value === 'light' ? 'dark' : 'light')
   const alertLevel = incidents.some((incident) => incident.severity === 'High') ? 'Critical' : 'Normal'
   if (authLoading) return <div className="auth-loading"><Loader2 size={24} className="animate-spin" /> Loading secure access...</div>
-  if (!session && employeeLogin) return <EmployeeAuthPage theme={theme} onToggleTheme={toggleTheme} onAuthorized={() => setEmployeeView(true)} onBack={() => setEmployeeLogin(false)} />
-  if (!session) return <AuthPage theme={theme} onToggleTheme={toggleTheme} onEmployeeLogin={() => setEmployeeLogin(true)} />
-  if (employeeView) return <div className="app-shell"><Navbar onSearch={search} onSignOut={() => { setEmployeeView(false); void supabase.auth.signOut() }} theme={theme} onToggleTheme={toggleTheme} /><NotificationSystem alertLevel={alertLevel} /><EmployeeDashboard incidents={incidents} userEmail={session.user.email} onBackToMap={() => setEmployeeView(false)} onRefresh={refresh} loading={loading} onIncidentChange={(next) => setIncidents((current) => current.map((incident) => incident.id === next.id ? next : incident))} /></div>
-  return <div className="app-shell">{demoMode && <AlertBanner onDismiss={() => setDemoMode(false)} />}<Navbar onSearch={search} onSignOut={() => { void supabase.auth.signOut() }} theme={theme} onToggleTheme={toggleTheme} /><NotificationSystem alertLevel={alertLevel} /><main className="layout"><Sidebar incidents={incidents} onReport={() => { setPicked(null); setReportOpen(true) }} demoMode={demoMode} onDemoToggle={() => setDemoMode((value) => !value)} lastUpdated={lastUpdated} onRefresh={refresh} loading={loading} /><section className="map-area"><MapView incidents={incidents} target={target} onMapClick={mapClick} />{error && <div className="map-error"><AlertCircle size={18} /> {error}</div>}<button className="fab" onClick={() => { setPicked(null); setReportOpen(true) }} aria-label="Report a hazard"><Plus size={22} /></button></section></main>{reportOpen && <ReportModal coordinates={picked} onClose={() => setReportOpen(false)} onSubmit={submit} />}</div>
+  if (!session && employeeLogin) return <EmployeeAuthPage theme={theme} onToggleTheme={toggleTheme} onAuthorized={(nextSession) => { setSession(nextSession); setEmployeeView(true); setEmployeeLogin(false) }} onBack={() => setEmployeeLogin(false)} />
+  if (!session) return <AuthPage theme={theme} onToggleTheme={toggleTheme} onEmployeeLogin={() => setEmployeeLogin(true)} onAuthenticated={setSession} />
+  if (employeeView) return <div className="app-shell"><Navbar onSearch={search} onSignOut={() => { setEmployeeView(false); signOut(); setSession(null) }} theme={theme} onToggleTheme={toggleTheme} /><NotificationSystem alertLevel={alertLevel} /><EmployeeDashboard incidents={incidents} userEmail={session.user.email} onBackToMap={() => setEmployeeView(false)} onRefresh={refresh} loading={loading} onIncidentChange={(next) => setIncidents((current) => current.map((incident) => incident.id === next.id ? next : incident))} /></div>
+  return <div className="app-shell">{demoMode && <AlertBanner onDismiss={() => setDemoMode(false)} />}<Navbar onSearch={search} onSignOut={() => { signOut(); setSession(null) }} theme={theme} onToggleTheme={toggleTheme} /><NotificationSystem alertLevel={alertLevel} /><main className="layout"><Sidebar incidents={incidents} onReport={() => { setPicked(null); setReportOpen(true) }} demoMode={demoMode} onDemoToggle={() => setDemoMode((value) => !value)} lastUpdated={lastUpdated} onRefresh={refresh} loading={loading} /><section className="map-area"><MapView incidents={incidents} target={target} onMapClick={mapClick} />{error && <div className="map-error"><AlertCircle size={18} /> {error}</div>}<button className="fab" onClick={() => { setPicked(null); setReportOpen(true) }} aria-label="Report a hazard"><Plus size={22} /></button></section></main>{reportOpen && <ReportModal coordinates={picked} onClose={() => setReportOpen(false)} onSubmit={submit} />}</div>
 }
