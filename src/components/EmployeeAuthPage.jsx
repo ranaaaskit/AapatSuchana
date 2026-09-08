@@ -1,10 +1,11 @@
 import { useState } from 'react'
-import { ArrowRight, BriefcaseBusiness, Loader2, Moon, ShieldCheck, Sun } from 'lucide-react'
+import { ArrowRight, BriefcaseBusiness, Languages, Loader2, Moon, ShieldCheck, Sun } from 'lucide-react'
 import { getCurrentUser, signIn, signOut } from '../services/apiClient'
 import logo from '../assets/aapatsuchana-logo.svg'
 import '../auth.css'
 
-export default function EmployeeAuthPage({ theme, onToggleTheme, onAuthorized, onBack }) {
+export default function EmployeeAuthPage({ theme, language = 'en', onToggleLanguage, onToggleTheme, onAuthorized, onBack }) {
+  const nepali = language === 'ne'
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
@@ -29,12 +30,12 @@ export default function EmployeeAuthPage({ theme, onToggleTheme, onAuthorized, o
   return (
     <main className="auth-page employee-auth-page">
       <section className="auth-panel">
-        <div className="auth-brand"><span className="logo-box"><img className="auth-logo" src={logo} alt="AapatSuchana" /></span><span className="employee-brand-label"><BriefcaseBusiness size={16} /> Employee access</span><button className="theme-toggle auth-theme-toggle" onClick={onToggleTheme} aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}>{theme === 'light' ? <Moon size={17} /> : <Sun size={17} />}</button></div>
-        <div className="auth-copy"><span className="auth-kicker"><ShieldCheck size={15} /> Restricted workspace</span><h1>Operations, in focus.</h1><p>Sign in with your approved employee account to review, verify, and resolve community reports.</p></div>
-        <form className="auth-form" onSubmit={submit}><label>Employee email<input type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="employee@your-org.com" autoComplete="username" required /></label><label>Password<input type="password" value={password} onChange={(event) => setPassword(event.target.value)} placeholder="Your secure password" autoComplete="current-password" required /></label>{error && <p className="auth-error" role="alert">{error}</p>}<button className="auth-submit" disabled={loading}>{loading ? <Loader2 size={18} className="animate-spin" /> : <ArrowRight size={18} />}Enter employee dashboard</button></form>
-        <button className="auth-switch" onClick={onBack}>Back to public sign in</button>
+        <div className="auth-brand"><span className="logo-box"><img className="auth-logo" src={logo} alt="AapatSuchana" /></span><span className="employee-brand-label"><BriefcaseBusiness size={16} /> {nepali ? 'कर्मचारी पहुँच' : 'Employee access'}</span><button className="language-toggle" onClick={onToggleLanguage} aria-label={nepali ? 'Switch to English' : 'नेपालीमा बदल्नुहोस्'}><Languages size={15} /> {nepali ? 'English' : 'नेपाली'}</button><button className="theme-toggle auth-theme-toggle" onClick={onToggleTheme} aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}>{theme === 'light' ? <Moon size={17} /> : <Sun size={17} />}</button></div>
+        <div className="auth-copy"><span className="auth-kicker"><ShieldCheck size={15} /> {nepali ? 'सीमित कार्यक्षेत्र' : 'Restricted workspace'}</span><h1>{nepali ? 'सञ्चालनमा केन्द्रित।' : 'Operations, in focus.'}</h1><p>{nepali ? 'समुदायका रिपोर्ट समीक्षा, प्रमाणीकरण र समाधान गर्न स्वीकृत कर्मचारी खाताबाट साइन इन गर्नुहोस्।' : 'Sign in with your approved employee account to review, verify, and resolve community reports.'}</p></div>
+        <form className="auth-form" onSubmit={submit}><label>{nepali ? 'कर्मचारी इमेल' : 'Employee email'}<input type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="employee@your-org.com" autoComplete="username" required /></label><label>{nepali ? 'पासवर्ड' : 'Password'}<input type="password" value={password} onChange={(event) => setPassword(event.target.value)} placeholder={nepali ? 'तपाईंको सुरक्षित पासवर्ड' : 'Your secure password'} autoComplete="current-password" required /></label>{error && <p className="auth-error" role="alert">{error}</p>}<button className="auth-submit" disabled={loading}>{loading ? <Loader2 size={18} className="animate-spin" /> : <ArrowRight size={18} />}{nepali ? 'कर्मचारी ड्यासबोर्डमा प्रवेश' : 'Enter employee dashboard'}</button></form>
+        <button className="auth-switch" onClick={onBack}>{nepali ? 'सार्वजनिक साइन इनमा फर्कनुहोस्' : 'Back to public sign in'}</button>
       </section>
-      <aside className="auth-aside"><div className="auth-aside-grid" /><span>STAFF / NEPAL</span><h2>Respond<br />with clarity.</h2><p>A focused workspace for teams coordinating safer responses across Nepal.</p></aside>
+      <aside className="auth-aside"><div className="auth-aside-grid" /><span>{nepali ? 'कर्मचारी / नेपाल' : 'STAFF / NEPAL'}</span><h2>{nepali ? <>स्पष्टताका साथ<br />प्रतिक्रिया दिनुहोस्।</> : <>Respond<br />with clarity.</>}</h2><p>{nepali ? 'नेपालभर सुरक्षित प्रतिक्रियाका लागि समन्वय गर्ने टोलीहरूको केन्द्रित कार्यक्षेत्र।' : 'A focused workspace for teams coordinating safer responses across Nepal.'}</p></aside>
     </main>
   )
 }
