@@ -125,6 +125,24 @@
   color: #93a0a5;
 }
 
+.search-clear {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  color: #829196;
+  background: transparent;
+}
+
+.search-clear:hover {
+  color: #2f819d;
+  background: #e3f2f3;
+}
+
 .search-button {
   border: 0;
   border-radius: 8px;
