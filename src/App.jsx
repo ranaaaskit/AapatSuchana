@@ -24,6 +24,7 @@ const fallbackIncidents = [
 
 export default function App() {
   const [theme, setTheme] = useState(() => localStorage.getItem('aapat-theme') || 'light')
+  const [language, setLanguage] = useState(() => localStorage.getItem('aapat-language') || 'en')
   const [session, setSession] = useState(null)
   const [authLoading, setAuthLoading] = useState(true)
   const [employeeView, setEmployeeView] = useState(false)
@@ -33,6 +34,9 @@ export default function App() {
     document.documentElement.dataset.theme = theme
     localStorage.setItem('aapat-theme', theme)
   }, [theme])
+  useEffect(() => {
+    localStorage.setItem('aapat-language', language)
+  }, [language])
   useEffect(() => {
     let active = true
     getSession().then((nextSession) => { if (active) { setSession(nextSession); setAuthLoading(false) } })
@@ -48,10 +52,11 @@ export default function App() {
   function mapClick(coordinates) { setPicked(coordinates); setReportOpen(true) }
   async function submit(form) { const report = { ...form, status: 'pending', id: `local-${Date.now()}`, created_at: new Date().toISOString() }; try { await createIncident(form); await refresh(); return } catch { const saved = JSON.parse(localStorage.getItem('aapat-incidents') || '[]'); localStorage.setItem('aapat-incidents', JSON.stringify([report, ...saved])); await refresh() } }
   const toggleTheme = () => setTheme((value) => value === 'light' ? 'dark' : 'light')
+  const toggleLanguage = () => setLanguage((value) => value === 'en' ? 'ne' : 'en')
   const alertLevel = incidents.some((incident) => incident.severity === 'High') ? 'Critical' : 'Normal'
-  if (authLoading) return <div className="auth-loading"><Loader2 size={24} className="animate-spin" /> Loading secure access...</div>
-  if (!session && employeeLogin) return <EmployeeAuthPage theme={theme} onToggleTheme={toggleTheme} onAuthorized={(nextSession) => { setSession({ ...nextSession, is_employee: true }); setEmployeeView(true); setEmployeeLogin(false) }} onBack={() => setEmployeeLogin(false)} />
-  if (!session) return <AuthPage theme={theme} onToggleTheme={toggleTheme} onEmployeeLogin={() => setEmployeeLogin(true)} onAuthenticated={setSession} />
-  if (employeeView) return <div className="app-shell"><Navbar onSearch={search} onSignOut={() => { setEmployeeView(false); signOut(); setSession(null) }} theme={theme} onToggleTheme={toggleTheme} /><NotificationSystem alertLevel={alertLevel} /><EmployeeDashboard incidents={incidents} userEmail={session.user.email} onBackToMap={() => setEmployeeView(false)} onRefresh={refresh} loading={loading} onIncidentChange={(next) => setIncidents((current) => current.map((incident) => incident.id === next.id ? next : incident))} /></div>
-  return <div className="app-shell">{demoMode && <AlertBanner onDismiss={() => setDemoMode(false)} />}<Navbar onSearch={search} onEmployeeDashboard={session.is_employee ? () => setEmployeeView(true) : undefined} onSignOut={() => { signOut(); setSession(null) }} theme={theme} onToggleTheme={toggleTheme} /><NotificationSystem alertLevel={alertLevel} /><main className="layout"><Sidebar incidents={incidents} onReport={() => { setPicked(null); setReportOpen(true) }} demoMode={demoMode} onDemoToggle={() => setDemoMode((value) => !value)} lastUpdated={lastUpdated} onRefresh={refresh} loading={loading} /><section className="map-area"><MapView incidents={incidents} target={target} onMapClick={mapClick} />{error && <div className="map-error"><AlertCircle size={18} /> {error}</div>}<button className="fab" onClick={() => { setPicked(null); setReportOpen(true) }} aria-label="Report a hazard"><Plus size={22} /></button></section></main>{reportOpen && <ReportModal coordinates={picked} onClose={() => setReportOpen(false)} onSubmit={submit} />}</div>
+  if (authLoading) return <div className="auth-loading"><Loader2 size={24} className="animate-spin" /> {language === 'ne' ? 'सुरक्षित पहुँच लोड हुँदैछ...' : 'Loading secure access...'}</div>
+  if (!session && employeeLogin) return <EmployeeAuthPage theme={theme} language={language} onToggleLanguage={toggleLanguage} onToggleTheme={toggleTheme} onAuthorized={(nextSession) => { setSession({ ...nextSession, is_employee: true }); setEmployeeView(true); setEmployeeLogin(false) }} onBack={() => setEmployeeLogin(false)} />
+  if (!session) return <AuthPage theme={theme} language={language} onToggleLanguage={toggleLanguage} onToggleTheme={toggleTheme} onEmployeeLogin={() => setEmployeeLogin(true)} onAuthenticated={setSession} />
+  if (employeeView) return <div className="app-shell"><Navbar onSearch={search} onSignOut={() => { setEmployeeView(false); signOut(); setSession(null) }} theme={theme} onToggleTheme={toggleTheme} language={language} onToggleLanguage={toggleLanguage} /><NotificationSystem alertLevel={alertLevel} language={language} /><EmployeeDashboard incidents={incidents} userEmail={session.user.email} language={language} onBackToMap={() => setEmployeeView(false)} onRefresh={refresh} loading={loading} onIncidentChange={(next) => setIncidents((current) => current.map((incident) => incident.id === next.id ? next : incident))} /></div>
+  return <div className="app-shell">{demoMode && <AlertBanner onDismiss={() => setDemoMode(false)} language={language} />}<Navbar onSearch={search} onEmployeeDashboard={session.is_employee ? () => setEmployeeView(true) : undefined} onSignOut={() => { signOut(); setSession(null) }} theme={theme} onToggleTheme={toggleTheme} language={language} onToggleLanguage={toggleLanguage} /><NotificationSystem alertLevel={alertLevel} language={language} /><main className="layout"><Sidebar incidents={incidents} language={language} onReport={() => { setPicked(null); setReportOpen(true) }} demoMode={demoMode} onDemoToggle={() => setDemoMode((value) => !value)} lastUpdated={lastUpdated} onRefresh={refresh} loading={loading} /><section className="map-area"><MapView incidents={incidents} language={language} target={target} onMapClick={mapClick} />{error && <div className="map-error"><AlertCircle size={18} /> {error}</div>}<button className="fab" onClick={() => { setPicked(null); setReportOpen(true) }} aria-label={language === 'ne' ? 'जोखिम रिपोर्ट गर्नुहोस्' : 'Report a hazard'}><Plus size={22} /></button></section></main>{reportOpen && <ReportModal coordinates={picked} language={language} onClose={() => setReportOpen(false)} onSubmit={submit} />}</div>
 }
