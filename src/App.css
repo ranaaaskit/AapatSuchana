@@ -39,7 +39,7 @@
 .topbar {
   position: relative;
   isolation: isolate;
-  overflow: hidden;
+  overflow: visible;
   height: 76px;
   display: flex;
   align-items: center;
@@ -51,7 +51,7 @@
   background-position: center, center bottom;
   background-size: cover, 100% auto;
   border-bottom: 1px solid #e4eaeb;
-  z-index: 10;
+  z-index: 1000;
 }
 
 .topbar>* {
