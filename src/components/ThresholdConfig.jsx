@@ -5,7 +5,8 @@ const initialValues = {
   criticalSoilMoisture: '70',
 }
 
-export default function ThresholdConfig({ initialThresholds = initialValues }) {
+export default function ThresholdConfig({ initialThresholds = initialValues, language = 'en' }) {
+  const nepali = language === 'ne'
   const [values, setValues] = useState({
     maxSafeRainfallRate: String(initialThresholds.maxSafeRainfallRate ?? initialValues.maxSafeRainfallRate),
     criticalSoilMoisture: String(initialThresholds.criticalSoilMoisture ?? initialValues.criticalSoilMoisture),
@@ -25,7 +26,7 @@ export default function ThresholdConfig({ initialThresholds = initialValues }) {
     const soilMoisture = Number(values.criticalSoilMoisture)
 
     if (!values.maxSafeRainfallRate.trim() || !values.criticalSoilMoisture.trim() || !Number.isFinite(rainfallRate) || !Number.isFinite(soilMoisture) || rainfallRate < 0 || soilMoisture < 0) {
-      setError('Thresholds must be valid numbers greater than or equal to zero.')
+      setError(nepali ? 'सीमाहरू शून्य वा सोभन्दा ठूलो मान्य सङ्ख्या हुनुपर्छ।' : 'Thresholds must be valid numbers greater than or equal to zero.')
       setSaved(false)
       return
     }
@@ -40,28 +41,28 @@ export default function ThresholdConfig({ initialThresholds = initialValues }) {
     <section className="threshold-config" aria-labelledby="threshold-config-title">
       <div className="threshold-config-heading">
         <div>
-          <span className="section-eyebrow">System controls</span>
-          <h2 id="threshold-config-title">Safety thresholds</h2>
+          <span className="section-eyebrow">{nepali ? 'प्रणाली नियन्त्रण' : 'System controls'}</span>
+          <h2 id="threshold-config-title">{nepali ? 'सुरक्षा सीमाहरू' : 'Safety thresholds'}</h2>
         </div>
-        {saved && <span className="threshold-saved" role="status">Saved</span>}
+        {saved && <span className="threshold-saved" role="status">{nepali ? 'सुरक्षित भयो' : 'Saved'}</span>}
       </div>
       <form onSubmit={submit}>
         <label>
-          Max Safe Rainfall Rate
+          {nepali ? 'अधिकतम सुरक्षित वर्षा दर' : 'Max Safe Rainfall Rate'}
           <span className="threshold-input-wrap">
             <input name="maxSafeRainfallRate" type="number" min="0" step="any" value={values.maxSafeRainfallRate} onChange={updateValue} aria-describedby="rainfall-unit" required />
             <span id="rainfall-unit">mm/hr</span>
           </span>
         </label>
         <label>
-          Critical Soil Moisture %
+          {nepali ? 'महत्त्वपूर्ण माटो चिस्यान %' : 'Critical Soil Moisture %'}
           <span className="threshold-input-wrap">
             <input name="criticalSoilMoisture" type="number" min="0" step="any" value={values.criticalSoilMoisture} onChange={updateValue} aria-describedby="moisture-unit" required />
             <span id="moisture-unit">%</span>
           </span>
         </label>
         {error && <p className="form-error" role="alert">{error}</p>}
-        <button className="employee-button" type="submit">Save thresholds</button>
+        <button className="employee-button" type="submit">{nepali ? 'सीमाहरू सुरक्षित गर्नुहोस्' : 'Save thresholds'}</button>
       </form>
     </section>
   )
