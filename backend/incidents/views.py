@@ -1,9 +1,29 @@
+import json
+from urllib.error import HTTPError, URLError
+from urllib.request import Request, urlopen
+
 from rest_framework import generics, permissions
+from django.http import JsonResponse
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import EmployeeAccount, Incident
 from .permissions import IsEmployee
 from .serializers import EmployeeAccountSerializer, IncidentSerializer, RegistrationSerializer
+
+
+def live_incidents(request):
+    if request.method != 'GET':
+        return JsonResponse({'detail': 'Only GET is supported.'}, status=405)
+
+    upstream_url = 'https://bipadportal.gov.np/api/v1/incident/?limit=1000&offset=0'
+    try:
+        upstream_request = Request(upstream_url, headers={'Accept': 'application/json', 'User-Agent': 'AapatSuchana/1.0'})
+        with urlopen(upstream_request, timeout=15) as response:
+            payload = json.load(response)
+    except (HTTPError, URLError, TimeoutError) as error:
+        return JsonResponse({'detail': f'BIPAD incident service unavailable: {error}'}, status=502)
+
+    return JsonResponse(payload)
 
 
 class RegisterView(generics.CreateAPIView):

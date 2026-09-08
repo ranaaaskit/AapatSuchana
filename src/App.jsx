@@ -41,7 +41,7 @@ export default function App() {
   const refresh = useCallback(async () => { setLoading(true); setError(''); const saved = JSON.parse(localStorage.getItem('aapat-incidents') || '[]'); const visibleSaved = saved.filter((incident) => employeeView || incident.status === 'approved'); const [liveHazards, reportResult] = await Promise.all([fetchLiveHazards().catch(() => []), fetchIncidents({ includePending: employeeView })]); const reports = reportResult.error ? [...visibleSaved, ...fallbackIncidents] : [...(reportResult.data || []), ...visibleSaved]; setIncidents([...liveHazards, ...reports]); setLastUpdated(new Date().toLocaleTimeString('en-NP', { hour: '2-digit', minute: '2-digit' })); if (reportResult.error && !liveHazards.length) setLastUpdated('Offline reports'); setLoading(false) }, [employeeView])
   useEffect(() => {
     queueMicrotask(() => { void refresh() })
-    const timer = window.setInterval(() => { void refresh() }, 15 * 60 * 1000)
+    const timer = window.setInterval(() => { void refresh() }, 5 * 60 * 1000)
     return () => window.clearInterval(timer)
   }, [refresh])
   async function search(query) { setTarget(await searchNepalLocation(query)) }
