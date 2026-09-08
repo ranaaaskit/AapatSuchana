@@ -1,2 +1,2 @@
 import { AlertTriangle, X } from 'lucide-react'
-export default function AlertBanner({ onDismiss }) { return <div className="critical-banner"><div><AlertTriangle size={18} /> CRITICAL ALERT: High Landslide Risk Detected near Mugling Area</div><button onClick={onDismiss} aria-label="Dismiss alert"><X size={17} /></button></div> }
+export default function AlertBanner({ onDismiss, language = 'en' }) { const nepali = language === 'ne'; return <div className="critical-banner"><div><AlertTriangle size={18} /> {nepali ? 'महत्त्वपूर्ण सूचना: मुग्लिन क्षेत्रमा पहिरोको उच्च जोखिम' : 'CRITICAL ALERT: High Landslide Risk Detected near Mugling Area'}</div><button onClick={onDismiss} aria-label={nepali ? 'सूचना बन्द गर्नुहोस्' : 'Dismiss alert'}><X size={17} /></button></div> }

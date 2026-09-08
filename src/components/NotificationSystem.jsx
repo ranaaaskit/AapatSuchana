@@ -20,7 +20,9 @@ function playAlertBeep() {
   oscillator.addEventListener('ended', () => { void context.close() }, { once: true })
 }
 
-export default function NotificationSystem({ alertLevel, message = 'Critical hazard detected. Review the affected area immediately.', onDismiss }) {
+export default function NotificationSystem({ alertLevel, language = 'en', message, onDismiss }) {
+  const nepali = language === 'ne'
+  const alertMessage = message || (nepali ? 'महत्त्वपूर्ण जोखिम पत्ता लाग्यो। प्रभावित क्षेत्र तुरुन्त जाँच गर्नुहोस्।' : 'Critical hazard detected. Review the affected area immediately.')
   const [visible, setVisible] = useState(alertLevel === 'Critical')
   const previousLevel = useRef(alertLevel)
 
@@ -49,11 +51,11 @@ export default function NotificationSystem({ alertLevel, message = 'Critical haz
       <div className="notification-copy">
         <AlertTriangle size={20} aria-hidden="true" />
         <div>
-          <strong>Critical warning</strong>
-          <span>{message}</span>
+          <strong>{nepali ? 'महत्त्वपूर्ण चेतावनी' : 'Critical warning'}</strong>
+          <span>{alertMessage}</span>
         </div>
       </div>
-      <button type="button" onClick={dismiss} aria-label="Dismiss critical warning" title="Dismiss warning">
+      <button type="button" onClick={dismiss} aria-label={nepali ? 'महत्त्वपूर्ण चेतावनी बन्द गर्नुहोस्' : 'Dismiss critical warning'} title={nepali ? 'चेतावनी बन्द गर्नुहोस्' : 'Dismiss warning'}>
         <X size={18} aria-hidden="true" />
       </button>
     </div>

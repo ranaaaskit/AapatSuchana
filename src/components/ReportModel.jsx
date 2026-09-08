@@ -1,7 +1,8 @@
 import { MapPin, X } from 'lucide-react'
 import { useState } from 'react'
 const blank = { title: '', type: 'Landslide', severity: 'Medium', lat: '', lng: '', description: '' }
-export default function ReportModal({ coordinates, onClose, onSubmit }) {
+export default function ReportModal({ coordinates, language = 'en', onClose, onSubmit }) {
+  const nepali = language === 'ne'
   const [form, setForm] = useState({ ...blank, ...coordinates })
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
@@ -30,32 +31,32 @@ export default function ReportModal({ coordinates, onClose, onSubmit }) {
       <div className="report-modal">
         <div className="modal-head">
           <div>
-            <p className="section-eyebrow">Community report</p>
-            <h2>Report a hazard</h2>
-            <p>Help people make safer decisions with a quick local update.</p>
+            <p className="section-eyebrow">{nepali ? 'समुदायको रिपोर्ट' : 'Community report'}</p>
+            <h2>{nepali ? 'जोखिम रिपोर्ट गर्नुहोस्' : 'Report a hazard'}</h2>
+            <p>{nepali ? 'छोटो स्थानीय जानकारीमार्फत मानिसहरूलाई सुरक्षित निर्णय लिन मद्दत गर्नुहोस्।' : 'Help people make safer decisions with a quick local update.'}</p>
           </div>
           <button
             onClick={onClose}
             className="icon-button"
-            aria-label="Close"
+            aria-label={nepali ? 'बन्द गर्नुहोस्' : 'Close'}
           >
             <X size={20} />
           </button>
         </div>
         <form onSubmit={submit}>
           <label>
-            Location title
+            {nepali ? 'स्थानको शीर्षक' : 'Location title'}
             <input
               name="title"
               value={form.title}
               onChange={update}
-              placeholder="e.g. Mugling Landslide"
+              placeholder={nepali ? 'जस्तै: मुग्लिन पहिरो' : 'e.g. Mugling Landslide'}
               required
             />
           </label>
           <div className="two-col">
             <label>
-              Hazard type
+              {nepali ? 'जोखिमको प्रकार' : 'Hazard type'}
               <select name="type" value={form.type} onChange={update}>
                 <option>Landslide</option>
                 <option>Flood</option>
@@ -63,7 +64,7 @@ export default function ReportModal({ coordinates, onClose, onSubmit }) {
               </select>
             </label>
             <label>
-              Severity
+              {nepali ? 'गम्भीरता' : 'Severity'}
               <select name="severity" value={form.severity} onChange={update}>
                 <option>Low</option>
                 <option>Medium</option>
@@ -73,7 +74,7 @@ export default function ReportModal({ coordinates, onClose, onSubmit }) {
           </div>
           <div className="two-col">
             <label>
-              Latitude
+              {nepali ? 'अक्षांश' : 'Latitude'}
               <input
                 name="lat"
                 type="number"
@@ -84,7 +85,7 @@ export default function ReportModal({ coordinates, onClose, onSubmit }) {
               />
             </label>
             <label>
-              Longitude
+              {nepali ? 'देशान्तर' : 'Longitude'}
               <input
                 name="lng"
                 type="number"
@@ -96,22 +97,22 @@ export default function ReportModal({ coordinates, onClose, onSubmit }) {
             </label>
           </div>
           <div className="coordinate-hint">
-            <MapPin size={15} /> Click anywhere on the map to fill coordinates
+            <MapPin size={15} /> {nepali ? 'निर्देशाङ्क भर्न नक्सामा जहाँसुकै थिच्नुहोस्' : 'Click anywhere on the map to fill coordinates'}
           </div>
           <label>
-            What is happening?
+            {nepali ? 'के भइरहेको छ?' : 'What is happening?'}
             <textarea
               name="description"
               value={form.description}
               onChange={update}
               rows="3"
-              placeholder="Share useful details for nearby travelers..."
+              placeholder={nepali ? 'नजिकका यात्रुका लागि उपयोगी विवरण साझा गर्नुहोस्...' : 'Share useful details for nearby travelers...'}
               required
             />
           </label>
           {error && <p className="form-error">{error}</p>}
           <button className="primary-button submit-button" disabled={saving}>
-            {saving ? 'Publishing report...' : 'Publish hazard report'}
+            {saving ? (nepali ? 'रिपोर्ट प्रकाशित हुँदैछ...' : 'Publishing report...') : (nepali ? 'जोखिम रिपोर्ट प्रकाशित गर्नुहोस्' : 'Publish hazard report')}
           </button>
         </form>
       </div>
