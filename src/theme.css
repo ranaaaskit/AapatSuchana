@@ -11,6 +11,11 @@
 [data-theme='dark'] .topbar { background-image: linear-gradient(90deg, #1b323af7 0%, #1b323aeb 58%, #1b323ad9 100%), url('./assets/navbar-skyline.svg'); background-size: cover, auto 42px; }
 [data-theme='dark'] .topbar { box-shadow: 0 1px 0 #2b4852; }
 [data-theme='dark'] .brand strong, [data-theme='dark'] .sidebar-title h2, [data-theme='dark'] .incident-row strong, [data-theme='dark'] .weather-card strong { color: #f5fbfb; }
+[data-theme='dark'] .emergency-contacts { border-color: #68413e; background: #352528; }
+[data-theme='dark'] .emergency-contacts .section-heading { color: #f0aaa2; }
+[data-theme='dark'] .contact-row { color: #c1d0d2; }
+[data-theme='dark'] .contact-row + .contact-row { border-color: #4b3335; }
+[data-theme='dark'] .contact-row strong { color: #f0aaa2; }
 [data-theme='dark'] .brand div span, [data-theme='dark'] .sidebar-intro, [data-theme='dark'] .incident-row span, [data-theme='dark'] .weather-card p, [data-theme='dark'] .section-heading { color: #a9c0c5; }
 [data-theme='dark'] .search-shell, [data-theme='dark'] .search-shell input, [data-theme='dark'] .signout-button, [data-theme='dark'] .theme-toggle { color: #e7f0f1; background: #14252c; border-color: #3b5b64; }
 [data-theme='dark'] .search-shell input::placeholder { color: #8ca7ad; }
