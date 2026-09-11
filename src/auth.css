@@ -17,6 +17,9 @@
 .auth-form input:focus { border-color: #78b4be; box-shadow: 0 0 0 3px #dff1f1; }
 .auth-submit { display: inline-flex; align-items: center; justify-content: center; gap: 9px; height: 46px; margin-top: 4px; border: 0; border-radius: 9px; color: #fff; background: #2f819d; font-size: 13px; font-weight: 700; }
 .auth-submit:disabled { cursor: wait; opacity: .7; }
+.auth-divider { display: flex; align-items: center; gap: 12px; max-width: 360px; margin: 20px 0 14px; color: #9aa7aa; font-size: 11px; text-transform: uppercase; }
+.auth-divider::before, .auth-divider::after { flex: 1; height: 1px; content: ''; background: #e5ebeb; }
+.google-button { min-height: 40px; max-width: 360px; }
 .auth-switch { align-self: flex-start; margin-top: 19px; padding: 0; border: 0; color: #2f819d; background: transparent; font-size: 12px; font-weight: 700; }
 .auth-employee-link { align-self: flex-start; margin-top: 13px; padding: 0; border: 0; color: #7b8a91; background: transparent; font-size: 11px; }
 .auth-employee-link:hover { color: #2f819d; }

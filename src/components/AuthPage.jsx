@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { ArrowRight, Languages, Loader2, Moon, ShieldCheck, Sun } from 'lucide-react'
-import { signIn, signUp } from '../services/apiClient'
+import { signIn, signInWithGoogle, signUp } from '../services/apiClient'
 import logo from '../assets/aapatsuchana-logo.svg'
 import '../auth.css'
 
@@ -12,6 +12,42 @@ export default function AuthPage({ theme, language = 'en', onToggleLanguage, onT
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
+  const googleButton = useRef(null)
+  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
+
+  useEffect(() => {
+    if (!googleClientId || !googleButton.current) return
+
+    function initializeGoogle() {
+      if (!window.google?.accounts?.id || !googleButton.current) return
+      window.google.accounts.id.initialize({
+        client_id: googleClientId,
+        callback: async ({ credential }) => {
+          setLoading(true)
+          setError('')
+          try {
+            onAuthenticated(await signInWithGoogle(credential))
+          } catch (requestError) {
+            setError(requestError.message)
+          } finally {
+            setLoading(false)
+          }
+        },
+      })
+      googleButton.current.replaceChildren()
+      window.google.accounts.id.renderButton(googleButton.current, { theme: 'outline', size: 'large', width: 360, text: 'continue_with' })
+    }
+
+    if (window.google?.accounts?.id) initializeGoogle()
+    else {
+      const script = document.createElement('script')
+      script.src = 'https://accounts.google.com/gsi/client'
+      script.async = true
+      script.defer = true
+      script.onload = initializeGoogle
+      document.head.appendChild(script)
+    }
+  }, [googleClientId, onAuthenticated])
 
   async function submit(event) {
     event.preventDefault()
@@ -40,6 +76,8 @@ export default function AuthPage({ theme, language = 'en', onToggleLanguage, onT
           {message && <p className="auth-message" role="status">{message}</p>}
           <button className="auth-submit" disabled={loading}>{loading ? <Loader2 size={18} className="animate-spin" /> : <ArrowRight size={18} />}{mode === 'login' ? (nepali ? 'साइन इन' : 'Sign in') : (nepali ? 'खाता बनाउनुहोस्' : 'Create account')}</button>
         </form>
+        <div className="auth-divider"><span>{nepali ? 'वा' : 'or'}</span></div>
+        {googleClientId ? <div className="google-button" ref={googleButton} /> : <p className="auth-message">{nepali ? 'Google साइन इन सेटअप गर्न VITE_GOOGLE_CLIENT_ID आवश्यक छ।' : 'Google sign-in needs VITE_GOOGLE_CLIENT_ID to be configured.'}</p>}
         <button className="auth-switch" onClick={() => { setMode(mode === 'login' ? 'signup' : 'login'); setError(''); setMessage('') }}>
           {mode === 'login' ? (nepali ? 'खाता छैन? साइन अप गर्नुहोस्' : 'Need an account? Sign up') : (nepali ? 'पहिले नै खाता छ? साइन इन गर्नुहोस्' : 'Already have an account? Sign in')}
         </button>

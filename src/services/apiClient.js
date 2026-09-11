@@ -41,6 +41,12 @@ export async function signUp(email, password) {
   return signIn(email, password)
 }
 
+export async function signInWithGoogle(credential) {
+  const data = await request('/auth/google/', { method: 'POST', body: JSON.stringify({ credential }) })
+  const session = saveSession(data)
+  return { ...session, user: { email: data.user?.email } }
+}
+
 export async function getSession() {
   const access = localStorage.getItem(ACCESS_TOKEN_KEY)
   const refresh = localStorage.getItem(REFRESH_TOKEN_KEY)
