@@ -19,6 +19,28 @@ npm run dev
 
 The frontend runs at `http://localhost:5173` and the API at `http://127.0.0.1:8000`.
 
+## Free Google sign-in setup
+
+Google sign-in uses Google Identity Services and the existing Django JWT session. Google verifies the Gmail/Google account and its verified email address; no paid service is required.
+
+1. In [Google Cloud Console](https://console.cloud.google.com/), create or select a project.
+2. Configure the OAuth consent screen. For local development, use **External** and add your Google account as a test user if the app is still in testing.
+3. Create an OAuth client under **APIs & Services > Credentials > Create credentials > OAuth client ID**. Choose **Web application**.
+4. Add `http://localhost:5173` under **Authorized JavaScript origins**.
+5. Copy the client ID and set it before starting Vite:
+
+   ```powershell
+   $env:VITE_GOOGLE_CLIENT_ID = 'your-client-id.apps.googleusercontent.com'
+   ```
+
+6. Set the same client ID for Django before starting the API:
+
+   ```powershell
+   $env:GOOGLE_OAUTH_CLIENT_ID = 'your-client-id.apps.googleusercontent.com'
+   ```
+
+Restart both servers after setting these variables. The Google button appears on the sign-in/sign-up page, and Django rejects tokens whose Google email is not verified or whose client ID does not match.
+
 ## Public login
 
 Use **Sign up** in the application with an email address and a password of at least six characters. The account is created in Django and then logged in automatically. Later, use the same email and password with **Sign in**.
