@@ -29,6 +29,12 @@ class RegistrationSerializer(serializers.ModelSerializer):
         fields = ('email', 'password')
         extra_kwargs = {'password': {'write_only': True, 'min_length': 6}}
 
+    def validate_email(self, value):
+        email = value.strip().lower()
+        if User.objects.filter(email__iexact=email).exists() or User.objects.filter(username__iexact=email).exists():
+            raise serializers.ValidationError('An account with this email already exists. Sign in instead.')
+        return email
+
     def create(self, validated_data):
         email = validated_data['email'].lower()
         return User.objects.create_user(username=email, email=email, password=validated_data['password'])
