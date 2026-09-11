@@ -8,9 +8,17 @@ async function request(path, options = {}) {
   const token = localStorage.getItem(ACCESS_TOKEN_KEY)
   if (token) headers.Authorization = `Bearer ${token}`
 
-  const response = await fetch(`${API_BASE}${path}`, { ...options, headers })
+  let response
+  try {
+    response = await fetch(`${API_BASE}${path}`, { ...options, headers })
+  } catch {
+    throw new Error(`Cannot connect to the API at ${API_BASE}. Start Django with "python backend/manage.py runserver".`)
+  }
   const body = await response.json().catch(() => ({}))
-  if (!response.ok) throw new Error(body.detail || Object.values(body).flat().join(' ') || 'Request failed')
+  if (!response.ok) {
+    const message = body.detail || Object.entries(body).map(([field, errors]) => `${field}: ${Array.isArray(errors) ? errors.join(' ') : errors}`).join(' ')
+    throw new Error(message || `Request failed (${response.status})`)
+  }
   return body
 }
 
